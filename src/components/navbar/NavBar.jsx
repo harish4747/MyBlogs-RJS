@@ -13,6 +13,9 @@ const NavBar = () => {
 
   const isLoggedIn = useSelector((state) => state.userInfo.isLoggedIn);
   const loggedInUser = useSelector((state) => state.userInfo.loggedInUser);
+  const isAdminLoggedIn = useSelector(
+    (state) => state.userInfo.isAdminLoggedIn,
+  );
 
   return (
     <section className="h-[13vh] w-full border border-gray-100 bg-[#fcfeff] shadow-md">
@@ -31,6 +34,16 @@ const NavBar = () => {
         <div className="flex gap-5">
           {isLoggedIn ? (
             <>
+              {isAdminLoggedIn && (
+                <button
+                  className="w-30 rounded-sm border border-gray-300 bg-blue-600 font-semibold text-white hover:bg-blue-700"
+                  onClick={() => {
+                    navigate("/admin-panel");
+                  }}
+                >
+                  Admin panel
+                </button>
+              )}
               <button
                 onClick={() => {
                   navigate("/createblog", {
@@ -41,7 +54,7 @@ const NavBar = () => {
                     },
                   });
                 }}
-                className="flex cursor-pointer gap-1 rounded-xs border border-transparent p-1.5 hover:border hover:border-gray-200 hover:bg-gray-100"
+                className="flex cursor-pointer gap-1 rounded-xs border border-gray-200 p-1.5 hover:bg-gray-200"
               >
                 <HiOutlinePencilAlt className="mt-1.5" />
                 New Post
@@ -60,6 +73,7 @@ const NavBar = () => {
                       <NavLink
                         onClick={() => {
                           dispatch(logoutUser());
+                          sessionStorage.removeItem("user");
                         }}
                       >
                         logout

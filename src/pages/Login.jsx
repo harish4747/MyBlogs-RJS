@@ -1,13 +1,33 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import { setLoggedInUser } from "../slices/UserSlice";
+import {
+  fetchUserData,
+  setIsAdminLoggedIn,
+  setLoggedInUser,
+} from "../slices/UserSlice";
 
 const Login = () => {
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.userInfo.userData);
   const navigate = useNavigate();
+  const user = useSelector((state) => state.userInfo.userData);
+  const adminList = useSelector((state) => state.userInfo.adminList);
+
+  useEffect(() => {
+    let sessionStorageUser = JSON.parse(sessionStorage.getItem("user"));
+    if (sessionStorageUser) {
+      if (adminList.includes(sessionStorageUser.email)) {
+        dispatch(setIsAdminLoggedIn());
+      }
+      dispatch(setLoggedInUser(sessionStorageUser));
+      navigate("/");
+    }
+  }, []);
+
+  useEffect(() => {
+    dispatch(fetchUserData());
+  }, []);
 
   const [data, setData] = useState({
     email: "",
@@ -52,6 +72,10 @@ const Login = () => {
       let temp = user.findIndex((val) => val.email === data.email);
       if (temp !== -1) {
         if (user[temp].password === data.password) {
+          if (adminList.includes(user[temp].email)) {
+            dispatch(setIsAdminLoggedIn());
+          }
+          sessionStorage.setItem("user", JSON.stringify(user[temp]));
           dispatch(setLoggedInUser(user[temp]));
           navigate("/");
         } else {

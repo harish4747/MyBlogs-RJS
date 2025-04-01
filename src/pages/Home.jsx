@@ -1,16 +1,33 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Footer from "../components/footer/Footer";
+import { fetchBlogData } from "../slices/BlogSlices";
+import { setIsAdminLoggedIn, setLoggedInUser } from "../slices/UserSlice";
 
 const Home = () => {
+  const dispatch = useDispatch();
   const [data, setData] = useState([]);
   const navigate = useNavigate();
   const blogData = useSelector((state) => state.blogInfo.blogs);
+  const adminList = useSelector((state) => state.userInfo.adminList);
 
   useEffect(() => {
-    setData(blogData);
+    let sessionStorageUser = JSON.parse(sessionStorage.getItem("user"));
+    if (sessionStorageUser) {
+      if (adminList.includes(sessionStorageUser.email)) {
+        dispatch(setIsAdminLoggedIn());
+      }
+      dispatch(setLoggedInUser(sessionStorageUser));
+    }
   }, []);
+
+  useEffect(() => {
+    dispatch(fetchBlogData());
+    setData(blogData);
+  }, [blogData.length]);
+
+  
 
   return (
     <>
@@ -45,7 +62,7 @@ const Home = () => {
                       </p>
                     </div>
                     <div className="w-full text-wrap">
-                      <article className="h-25 max-h-25 overflow-hidden overflow-ellipsis w-full text-wrap">
+                      <article className="h-25 max-h-25 w-full overflow-hidden text-wrap overflow-ellipsis">
                         {val.content}
                       </article>
                     </div>

@@ -6,6 +6,8 @@ import Home from "../pages/Home";
 import CreateBlog from "../components/createBlog/CreateBlog";
 import ReadingPage from "../pages/ReadingPage";
 import Profile from "../pages/Profile";
+import AdminPanel from "../pages/AdminPanel";
+import NotFoundPage from "../pages/NotFoundPage";
 
 const MyRoutes = createBrowserRouter([
   {
@@ -35,6 +37,14 @@ const MyRoutes = createBrowserRouter([
       {
         path: "/profile",
         element: <Profile />,
+      },
+      {
+        path: "/admin-panel",
+        element: <AdminPanel />,
+      },
+      {
+        path: "/*",
+        element: <NotFoundPage />,
       },
     ],
   },
