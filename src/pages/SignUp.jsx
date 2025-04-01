@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
-import { setUserData } from "../slices/UserSlice";
+import {
+  fetchUserData,
+  postUserData,
+} from "../slices/UserSlice";
 
 const SignUp = () => {
   const dispatch = useDispatch();
@@ -49,18 +52,24 @@ const SignUp = () => {
     }
   };
 
+  useEffect(() => {
+    dispatch(fetchUserData());
+  }, []);
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     if (data.username && data.email && data.password && data.confirmpassword) {
       if (data.password === data.confirmpassword) {
-        dispatch(
-          setUserData({
-            username: data.username.trim(),
-            email: data.email.trim(),
-            password: data.password.trim(),
-          }),
-        );
-        navigate("/");
+        const payload = {
+          username: data.username.trim(),
+          email: data.email.trim(),
+          password: data.password.trim(),
+        };
+
+        dispatch(postUserData(payload));
+        sessionStorage.setItem("user", JSON.stringify(payload));
+        navigate("/login");
       } else {
         toast.error("confirm password should be same as password");
       }

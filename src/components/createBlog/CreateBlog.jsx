@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
-import { setBlogs, updateBlog } from "../../slices/BlogSlices";
+import {
+  postBlogData,
+  updateBlog,
+  updateBlogData,
+} from "../../slices/BlogSlices";
 import { toast, ToastContainer } from "react-toastify";
+import Preview from "../previewpage/Preview";
 
 const CreateBlog = () => {
   const isLoggedIn = useSelector((state) => state.userInfo.isLoggedIn);
@@ -12,8 +17,6 @@ const CreateBlog = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
 
-  // console.log("state");
-  // console.log(state);
 
   const months = [
     "January",
@@ -32,14 +35,18 @@ const CreateBlog = () => {
 
   let date = new Date();
 
+  console.log("start in createblog");
+  console.log(state)
+
   const [data, setData] = useState({
-    title: state.val?.title || "",
-    imgURL: state.val?.imgURL || "",
-    content: state.val?.content || "",
-    by: loggedInUser[0]?.username,
-    email: loggedInUser[0]?.email,
+    id:state?.val?.id,
+    title: state?.val?.title || "",
+    imgURL: state?.val?.imgURL || "",
+    content: state?.val?.content || "",
+    by: state?.val?.by || loggedInUser[0]?.username,
+    email: state?.val?.email || loggedInUser[0]?.email,
     date:
-      state.val?.date ||
+      state?.val?.date ||
       months[date.getMonth()] +
         " " +
         date.getDate() +
@@ -81,7 +88,8 @@ const CreateBlog = () => {
 
   const handleSubmit = () => {
     if (data.title && data.content) {
-      dispatch(setBlogs(data));
+      // dispatch(setBlogs(data));
+      dispatch(postBlogData(data));
       toast.success("post created", { autoClose: 1000, hideProgressBar: true });
 
       setTimeout(() => {
@@ -108,16 +116,17 @@ const CreateBlog = () => {
 
   const updateSingleBlog = () => {
     dispatch(updateBlog({ data, index: state.index }));
-    toast.success("Updated successfully",{hideProgressBar:true});
-    setTimeout(()=>{
+    dispatch(updateBlogData(data ));
+    toast.success("Updated successfully", { hideProgressBar: true });
+    setTimeout(() => {
       navigate("/");
-    },1300)
+    }, 1300);
   };
 
   return (
     <>
       {isLoggedIn ? (
-        <section className="flex h-[100vh] w-full flex-wrap items-center justify-center p-9">
+        <section className="flex h-[100vh] w-full flex-wrap items-center justify-around p-9">
           <ToastContainer theme="dark" />
           <div className="flex w-140 flex-col flex-wrap gap-3 rounded-sm border border-gray-300 p-7 shadow-md">
             <div>
@@ -184,6 +193,9 @@ const CreateBlog = () => {
                 {state.button}
               </button>
             </div>
+          </div>
+          <div>
+            <Preview data={data} />
           </div>
         </section>
       ) : (

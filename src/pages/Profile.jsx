@@ -1,12 +1,16 @@
 import { useSelector } from "react-redux";
 import { IoIosMailOpen } from "react-icons/io";
 import { Navigate } from "react-router-dom";
+import { MdOutlineAdminPanelSettings } from "react-icons/md";
 
 const Profile = () => {
   const defaultProfileImage =
     "https://cdn3.iconfinder.com/data/icons/avatars-flat/33/man_5-1024.png";
 
   const loggedInUser = useSelector((state) => state.userInfo.loggedInUser);
+  const isAdminLoggedIn = useSelector(
+    (state) => state.userInfo.isAdminLoggedIn,
+  );
 
   return (
     <section className="flex h-screen w-screen items-center justify-center">
@@ -23,9 +27,25 @@ const Profile = () => {
                 {loggedInUser[0]?.username}
               </h1>
               <hr />
-              <div className="mt-4 flex">
-                <IoIosMailOpen size={20} fill="gray" className="mt-0.5 mr-1" />
-                <p className="text-gray-600">{loggedInUser[0]?.email}</p>
+              <div>
+                <div className="mt-4 flex">
+                  <MdOutlineAdminPanelSettings
+                    size={20}
+                    fill="gray"
+                    className="mt-0.5 mr-1"
+                  />
+                  <p className="text-gray-600">
+                    Status : {isAdminLoggedIn ? "Admin" : "User"}
+                  </p>
+                </div>
+                <div className="mt-4 flex">
+                  <IoIosMailOpen
+                    size={20}
+                    fill="gray"
+                    className="mt-0.5 mr-1"
+                  />
+                  <p className="text-gray-600">{loggedInUser[0]?.email}</p>
+                </div>
               </div>
             </div>
           </div>
